@@ -1,480 +1,1069 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-:root {
-    --primary: #6366f1;
-    --primary-dark: #4f46e5;
-    --secondary: #10b981;
-    --danger: #ef4444;
-    --warning: #f59e0b;
-    --dark: #1f2937;
-    --light: #f9fafb;
-    --gray: #9ca3af;
-    --gray-dark: #6b7280;
-    --border-radius: 12px;
-    --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-}
-
-.container {
-    width: 100%;
-    max-width: 900px;
-    height: 90vh;
-    background: white;
-    border-radius: 24px;
-    box-shadow: var(--shadow);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    position: relative;
-}
-
-/* Header */
-.header {
-    padding: 20px 30px;
-    background: var(--dark);
-    color: white;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 2px solid var(--primary);
-}
-
-.logo {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.logo i {
-    font-size: 2rem;
-    color: var(--primary);
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
-}
-
-.logo h1 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    background: linear-gradient(to right, var(--primary), var(--secondary));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-.session-status {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 16px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
-    backdrop-filter: blur(10px);
-}
-
-.status-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    transition: var(--transition);
-}
-
-.status-dot.connected { background: var(--secondary); box-shadow: 0 0 10px var(--secondary); }
-.status-dot.connecting { background: var(--warning); animation: blink 1.5s infinite; }
-.status-dot.disconnected { background: var(--danger); }
-.status-dot.processing { background: var(--primary); animation: pulse 1s infinite; }
-
-@keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
-}
-
-.status-text {
-    font-size: 0.9rem;
-    font-weight: 500;
-}
-
-/* Chat Container */
-.chat-container {
-    flex: 1;
-    padding: 30px;
-    overflow-y: auto;
-    background: linear-gradient(to bottom, var(--light) 0%, white 100%);
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.chat-messages {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.message {
-    display: flex;
-    gap: 15px;
-    max-width: 80%;
-    animation: slideIn 0.3s ease-out;
-}
-
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.message.ai {
-    align-self: flex-start;
-}
-
-.message.user {
-    align-self: flex-end;
-    flex-direction: row-reverse;
-}
-
-.avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-.message.ai .avatar {
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-    color: white;
-}
-
-.message.user .avatar {
-    background: linear-gradient(135deg, var(--secondary), #0da271);
-    color: white;
-}
-
-.content {
-    background: white;
-    padding: 15px 20px;
-    border-radius: 18px;
-    box-shadow: var(--shadow);
-    position: relative;
-}
-
-.message.ai .content {
-    border-top-left-radius: 4px;
-    background: white;
-    border-left: 4px solid var(--primary);
-}
-
-.message.user .content {
-    border-top-right-radius: 4px;
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-    color: white;
-    border-right: 4px solid var(--secondary);
-}
-
-.text {
-    line-height: 1.5;
-    font-size: 1rem;
-}
-
-.timestamp {
-    font-size: 0.75rem;
-    color: var(--gray);
-    margin-top: 5px;
-    text-align: right;
-}
-
-.message.user .timestamp {
-    color: rgba(255, 255, 255, 0.8);
-}
-
-/* Typing Indicator */
-.typing-indicator {
-    display: none;
-    align-items: center;
-    gap: 15px;
-    padding: 15px 20px;
-    background: white;
-    border-radius: 18px;
-    box-shadow: var(--shadow);
-    align-self: flex-start;
-    animation: fadeIn 0.3s ease-out;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-.dots {
-    display: flex;
-    gap: 4px;
-}
-
-.dots span {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--primary);
-    animation: bounce 1.4s infinite ease-in-out both;
-}
-
-.dots span:nth-child(1) { animation-delay: -0.32s; }
-.dots span:nth-child(2) { animation-delay: -0.16s; }
-
-@keyframes bounce {
-    0%, 80%, 100% { transform: scale(0); }
-    40% { transform: scale(1); }
-}
-
-/* Input Area */
-.input-area {
-    padding: 20px 30px;
-    background: white;
-    border-top: 1px solid #e5e7eb;
-}
-
-.input-wrapper {
-    position: relative;
-    display: flex;
-    gap: 10px;
-}
-
-#messageInput {
-    flex: 1;
-    padding: 15px 20px;
-    border: 2px solid #e5e7eb;
-    border-radius: var(--border-radius);
-    font-size: 1rem;
-    transition: var(--transition);
-    outline: none;
-}
-
-#messageInput:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-}
-
-#messageInput:disabled {
-    background: #f3f4f6;
-    cursor: not-allowed;
-}
-
-.send-btn {
-    padding: 15px 25px;
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-    color: white;
-    border: none;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    transition: var(--transition);
-    font-size: 1.1rem;
-}
-
-.send-btn:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
-}
-
-.send-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.input-footer {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 10px;
-    font-size: 0.8rem;
-    color: var(--gray);
-}
-
-.hint {
-    opacity: 0.7;
-}
-
-.connection-info {
-    font-weight: 500;
-}
-
-/* Modal */
-.modal {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(5px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    animation: fadeIn 0.3s ease-out;
-}
-
-.modal-content {
-    background: white;
-    padding: 40px;
-    border-radius: 24px;
-    max-width: 500px;
-    width: 90%;
-    text-align: center;
-    box-shadow: var(--shadow);
-}
-
-.modal-content h2 {
-    color: var(--dark);
-    margin-bottom: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-}
-
-.modal-content h2 i {
-    color: var(--primary);
-}
-
-.connection-steps {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin-bottom: 30px;
-}
-
-.step {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    padding: 15px;
-    border-radius: var(--border-radius);
-    background: #f3f4f6;
-    transition: var(--transition);
-}
-
-.step.active {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(16, 185, 129, 0.1));
-    border-left: 4px solid var(--primary);
-}
-
-.step.completed {
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
-    border-left: 4px solid var(--secondary);
-}
-
-.step-number {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background: var(--gray);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-}
-
-.step.active .step-number {
-    background: var(--primary);
-}
-
-.step.completed .step-number {
-    background: var(--secondary);
-}
-
-.step-text {
-    flex: 1;
-    text-align: left;
-    font-weight: 500;
-}
-
-.loading-bar {
-    height: 6px;
-    background: #e5e7eb;
-    border-radius: 3px;
-    overflow: hidden;
-    margin-bottom: 20px;
-}
-
-.loading-progress {
-    height: 100%;
-    background: linear-gradient(to right, var(--primary), var(--secondary));
-    width: 0%;
-    transition: width 0.3s ease;
-    border-radius: 3px;
-}
-
-.modal-message {
-    color: var(--gray-dark);
-    font-size: 0.9rem;
-    line-height: 1.5;
-}
-
-/* Scrollbar */
-.chat-container::-webkit-scrollbar {
-    width: 8px;
-}
-
-.chat-container::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
-}
-
-.chat-container::-webkit-scrollbar-thumb {
-    background: var(--primary);
-    border-radius: 4px;
-}
-
-.chat-container::-webkit-scrollbar-thumb:hover {
-    background: var(--primary-dark);
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .container {
-        height: 100vh;
-        border-radius: 0;
-        padding: 0;
-    }
-    
-    .header {
-        padding: 15px 20px;
-    }
-    
-    .chat-container {
-        padding: 20px;
-    }
-    
-    .message {
-        max-width: 90%;
-    }
-    
-    .modal-content {
-        padding: 30px 20px;
-        width: 95%;
-    }
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SigmaGPT AI Assistant</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #7c3aed;
+            --primary-dark: #5b21b6;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #1e1b4b;
+            --light: #f8fafc;
+            --gray: #94a3b8;
+            --border-radius: 16px;
+            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            height: 90vh;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Header */
+        .header {
+            padding: 20px 30px;
+            background: linear-gradient(135deg, var(--dark) 0%, #312e81 100%);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--primary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #8b5cf6, #10b981, #8b5cf6);
+            background-size: 200% 100%;
+            animation: shimmer 3s infinite linear;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            color: #8b5cf6;
+            animation: float 3s ease-in-out infinite;
+            filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.5));
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #8b5cf6, #10b981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .session-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .status-dot.connected {
+            background: var(--secondary);
+            box-shadow: 0 0 15px var(--secondary);
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.connecting {
+            background: var(--warning);
+            animation: blink 1s infinite;
+        }
+
+        .status-dot.processing {
+            background: var(--primary);
+            animation: pulse 1s infinite;
+        }
+
+        .status-dot.disconnected {
+            background: var(--danger);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .status-text {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .session-id {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Chat Area */
+        .chat-container {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+        }
+
+        .welcome-message {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(16, 185, 129, 0.1));
+            border-radius: 20px;
+            margin-bottom: 20px;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .welcome-message h2 {
+            color: var(--dark);
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+
+        .welcome-message p {
+            color: var(--gray);
+            line-height: 1.6;
+        }
+
+        .chat-messages {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .message {
+            display: flex;
+            gap: 15px;
+            max-width: 85%;
+            animation: slideUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.ai {
+            align-self: flex-start;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .message.ai .avatar {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+        }
+
+        .message.user .avatar {
+            background: linear-gradient(135deg, #10b981, #0d9c6b);
+            color: white;
+        }
+
+        .message-content {
+            background: white;
+            padding: 18px 22px;
+            border-radius: 22px;
+            box-shadow: var(--shadow);
+            position: relative;
+            max-width: 100%;
+            word-wrap: break-word;
+        }
+
+        .message.ai .message-content {
+            border-top-left-radius: 6px;
+            border-left: 4px solid var(--primary);
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        }
+
+        .message.user .message-content {
+            border-top-right-radius: 6px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border-right: 4px solid var(--secondary);
+        }
+
+        .message-text {
+            line-height: 1.6;
+            font-size: 1.05rem;
+        }
+
+        .timestamp {
+            font-size: 0.75rem;
+            margin-top: 8px;
+            opacity: 0.7;
+            text-align: right;
+        }
+
+        .message.user .timestamp {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Typing Indicator */
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            background: white;
+            border-radius: 22px;
+            box-shadow: var(--shadow);
+            align-self: flex-start;
+            animation: fadeIn 0.3s ease-out;
+            max-width: 300px;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .typing-dots span {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--primary);
+            animation: typing 1.4s infinite ease-in-out both;
+        }
+
+        .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Input Area */
+        .input-area {
+            padding: 25px 30px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            position: relative;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        #messageInput {
+            flex: 1;
+            padding: 18px 24px;
+            border: 2px solid #e2e8f0;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+            outline: none;
+            background: #f8fafc;
+            font-family: inherit;
+            resize: none;
+            min-height: 56px;
+            max-height: 150px;
+        }
+
+        #messageInput:focus {
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+        }
+
+        #messageInput:disabled {
+            background: #f1f5f9;
+            cursor: not-allowed;
+        }
+
+        .send-button {
+            padding: 16px 28px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        .send-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+        }
+
+        .send-button:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .send-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .input-footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        .connection-info {
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Connection Modal */
+        .connection-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: modalFadeIn 0.3s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            padding: 50px;
+            border-radius: 28px;
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: modalSlideUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        @keyframes modalSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-content h2 {
+            color: var(--dark);
+            margin-bottom: 30px;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .modal-content h2 i {
+            color: var(--primary);
+            font-size: 2.5rem;
+        }
+
+        .connection-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            background: #f1f5f9;
+            transition: var(--transition);
+            text-align: left;
+        }
+
+        .step.active {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(16, 185, 129, 0.1));
+            border-left: 5px solid var(--primary);
+            transform: translateX(5px);
+        }
+
+        .step.completed {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
+            border-left: 5px solid var(--secondary);
+        }
+
+        .step-number {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--gray);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .step.active .step-number {
+            background: var(--primary);
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        .step.completed .step-number {
+            background: var(--secondary);
+        }
+
+        .step-text {
+            flex: 1;
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 1.1rem;
+        }
+
+        .loading-bar {
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .loading-progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.6s ease;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .loading-progress::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmerLoad 2s infinite;
+        }
+
+        @keyframes shimmerLoad {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .modal-message {
+            color: var(--gray);
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-top: 20px;
+        }
+
+        /* Notifications */
+        .notification {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, var(--dark), #312e81);
+            color: white;
+            padding: 18px 24px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            z-index: 1001;
+            animation: slideInRight 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            max-width: 350px;
+            border-left: 4px solid var(--primary);
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        /* Scrollbar */
+        .chat-container::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .chat-container::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 5px;
+        }
+
+        .chat-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 5px;
+        }
+
+        .chat-container::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, var(--primary-dark), #5b21b6);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                height: 100vh;
+                border-radius: 0;
+                margin: 0;
+            }
+            
+            .header {
+                padding: 15px 20px;
+            }
+            
+            .chat-container {
+                padding: 20px;
+            }
+            
+            .message {
+                max-width: 90%;
+            }
+            
+            .modal-content {
+                padding: 30px 20px;
+                width: 95%;
+            }
+            
+            .input-area {
+                padding: 20px;
+            }
+            
+            .send-button {
+                padding: 14px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-robot logo-icon"></i>
+                <h1>SigmaGPT AI Assistant</h1>
+            </div>
+            <div class="session-info">
+                <div class="status-indicator">
+                    <div class="status-dot disconnected"></div>
+                    <span class="status-text">Disconnected</span>
+                </div>
+                <div class="session-id" id="sessionId"></div>
+            </div>
+        </div>
+
+        <!-- Chat Area -->
+        <div class="chat-container">
+            <div class="welcome-message">
+                <h2>Welcome to SigmaGPT</h2>
+                <p>Your intelligent AI assistant powered by advanced language models. 
+                   Connect to start a conversation!</p>
+            </div>
+            
+            <div class="chat-messages" id="chatMessages">
+                <!-- Messages will appear here -->
+            </div>
+            
+            <!-- Typing Indicator -->
+            <div class="typing-indicator" id="typingIndicator">
+                <div class="typing-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <span>AI is thinking...</span>
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="input-area">
+            <div class="input-wrapper">
+                <textarea id="messageInput" 
+                          placeholder="Type your message here... (Press Enter to send, Shift+Enter for new line)" 
+                          autocomplete="off"
+                          rows="1"></textarea>
+                <button id="sendButton" class="send-button">
+                    <i class="fas fa-paper-plane"></i>
+                    <span>Send</span>
+                </button>
+            </div>
+            <div class="input-footer">
+                <span class="hint">Connected to: 192.168.157.1:8080</span>
+                <div class="connection-info">
+                    <i class="fas fa-signal"></i>
+                    <span id="connectionStatus">Not connected</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Connection Modal -->
+        <div class="connection-modal" id="connectionModal">
+            <div class="modal-content">
+                <h2><i class="fas fa-plug"></i> Connecting to AI Server</h2>
+                <div class="connection-steps">
+                    <div class="step" id="step1">
+                        <span class="step-number">1</span>
+                        <span class="step-text">Establishing connection...</span>
+                    </div>
+                    <div class="step" id="step2">
+                        <span class="step-number">2</span>
+                        <span class="step-text">Creating secure session...</span>
+                    </div>
+                    <div class="step" id="step3">
+                        <span class="step-number">3</span>
+                        <span class="step-text">Loading AI personality...</span>
+                    </div>
+                    <div class="step" id="step4">
+                        <span class="step-number">4</span>
+                        <span class="step-text">Ready to chat!</span>
+                    </div>
+                </div>
+                <div class="loading-bar">
+                    <div class="loading-progress" id="loadingProgress"></div>
+                </div>
+                <div class="modal-message" id="modalMessage">
+                    Connecting to AI server at 192.168.157.1:8080...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class SigmaGPT {
+            constructor() {
+                this.serverUrl = 'http://192.168.157.1:8080';
+                this.sessionId = null;
+                this.token = null;
+                this.isConnected = false;
+                this.isProcessing = false;
+                this.pingInterval = null;
+                this.reconnectAttempts = 0;
+                this.maxReconnectAttempts = 5;
+
+                // DOM Elements
+                this.elements = {
+                    messageInput: document.getElementById('messageInput'),
+                    sendButton: document.getElementById('sendButton'),
+                    chatMessages: document.getElementById('chatMessages'),
+                    typingIndicator: document.getElementById('typingIndicator'),
+                    sessionIdDisplay: document.getElementById('sessionId'),
+                    connectionStatus: document.getElementById('connectionStatus'),
+                    connectionModal: document.getElementById('connectionModal'),
+                    loadingProgress: document.getElementById('loadingProgress'),
+                    modalMessage: document.getElementById('modalMessage'),
+                    statusDot: document.querySelector('.status-dot'),
+                    statusText: document.querySelector('.status-text')
+                };
+
+                // Initialize
+                this.init();
+            }
+
+            init() {
+                // Auto-resize textarea
+                this.elements.messageInput.addEventListener('input', () => {
+                    this.elements.messageInput.style.height = 'auto';
+                    this.elements.messageInput.style.height = Math.min(this.elements.messageInput.scrollHeight, 150) + 'px';
+                });
+
+                // Send button click
+                this.elements.sendButton.addEventListener('click', () => this.sendMessage());
+
+                // Enter key handling
+                this.elements.messageInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        this.sendMessage();
+                    }
+                });
+
+                // Connect to server
+                this.connect();
+            }
+
+            async connect() {
+                this.showConnectionModal();
+                this.updateStep(1, 'Connecting to server...');
+                
+                try {
+                    // Create new session
+                    const response = await fetch(`${this.serverUrl}/api/ping`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        this.sessionId = data.sessionId;
+                        this.token = data.token;
+                        this.updateStep(2, 'Session created');
+                        this.updateProgress(33);
+                        
+                        // Start ping interval
+                        this.startPingInterval();
+                        
+                        // Update UI
+                        this.elements.sessionIdDisplay.textContent = `Session: ${this.sessionId.substring(0, 8)}...`;
+                        this.updateStatus('connecting', 'Connecting...');
+                        
+                        // Wait for AI to be ready
+                        setTimeout(() => {
+                            this.updateStep(3, 'Loading AI personality...');
+                            this.updateProgress(66);
+                            
+                            setTimeout(() => {
+                                this.updateStep(4, 'Ready to chat!');
+                                this.updateProgress(100);
+                                
+                                setTimeout(() => {
+                                    this.hideConnectionModal();
+                                    this.isConnected = true;
+                                    this.updateStatus('ready', 'Connected');
+                                    this.showNotification('Connected to AI assistant!', 'success');
+                                    this.addMessage('ai', "Hello! I'm SigmaGPT, your AI assistant. How can I help you today?", true);
+                                }, 1000);
+                            }, 2000);
+                        }, 1000);
+                    } else {
+                        throw new Error(data.error || 'Failed to create session');
+                    }
+                } catch (error) {
+                    this.handleConnectionError(error.message);
+                }
+            }
+
+            startPingInterval() {
+                // Ping every 30 seconds to keep session alive
+                this.pingInterval = setInterval(async () => {
+                    if (this.sessionId && this.token) {
+                        try {
+                            await fetch(`${this.serverUrl}/api/ping`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    sessionId: this.sessionId,
+                                    token: this.token
+                                })
+                            });
+                        } catch (error) {
+                            console.warn('Ping failed:', error);
+                        }
+                    }
+                }, 30000);
+            }
+
+            async sendMessage() {
+                const message = this.elements.messageInput.value.trim();
+                
+                if (!message) return;
+                if (!this.isConnected) {
+                    this.showNotification('Not connected to server', 'error');
+                    return;
+                }
+                if (this.isProcessing) {
+                    this.showNotification('Please wait for the current response', 'warning');
+                    return;
+                }
+
+                // Add user message to chat
+                this.addMessage('user', message);
+                this.elements.messageInput.value = '';
+                this.elements.messageInput.style.height = 'auto';
+                
+                // Show typing indicator
+                this.showTypingIndicator();
+                this.isProcessing = true;
+                this.updateStatus('processing', 'Processing...');
+
+                try {
+                    const response = await fetch(`${this.serverUrl}/api/message`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            sessionId: this.sessionId,
+                            token: this.token,
+                            message: message
+                        })
+                    });
+
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        this.addMessage('ai', data.response);
+                    } else {
+                        this.addMessage('ai', `Error: ${data.error || 'Unknown error'}`);
+                        this.showNotification(data.error || 'Failed to get response', 'error');
+                    }
+                } catch (error) {
+                    this.addMessage('ai', 'Connection error. Please try again.');
+                    this.showNotification('Failed to send message', 'error');
+                    console.error('Send error:', error);
+                } finally {
+                    this.hideTypingIndicator();
+                    this.isProcessing = false;
+                    this.updateStatus('ready', 'Connected');
+                }
+            }
+
+            addMessage(sender, text, isSystem = false) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${sender}`;
+                
+                const timestamp = new Date().toLocaleTimeString([], { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+                
+                messageDiv.innerHTML = `
+                    <div class="avatar">
+                        <i class="fas fa-${sender === 'ai' ? 'robot' : 'user'}"></i>
+                    </div>
+                    <div class="message-content">
+                        <div class="message-text">${this.escapeHtml(text)}</div>
+                        <div class="timestamp">${timestamp}</div>
+                    </div>
+                `;
+                
+                this.elements.chatMessages.appendChild(messageDiv);
+                
+                // Smooth scroll to bottom
+                setTimeout(() => {
+                    this.elements.chatMessages.scrollTo({
+                        top: this.elements.chatMessages.scrollHeight,
+                        behavior: 'smooth'
+                    });
+                }, 100);
+            }
+
+            showTypingIndicator() {
+                this.elements.typingIndicator.style.display = 'flex';
+                this.elements.chatMessages.scrollTo({
+                    top: this.elements.chatMessages.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }
+
+            hideTypingIndicator() {
+                this.elements.typingIndicator.style.display = 'none';
+            }
+
+            updateStatus(status, text) {
+                this.elements.statusDot.className = 'status-dot ' + status;
+                this.elements.statusText.textContent = text;
+                this.elements.connectionStatus.textContent = text;
+            }
+
+            handleConnectionError(error) {
+                this.updateModalMessage(`Connection failed: ${error}`);
+                this.updateStep(1, 'Connection failed');
+                
+                setTimeout(() => {
+                    if (this.reconnectAttempts < this.maxReconnectAttempts) {
+                        this.reconnectAttempts++;
+                        this.updateModalMessage(`Retrying connection (${this.reconnectAttempts}/${this.maxReconnectAttempts})...`);
+                        setTimeout(() => this.connect(), 2000);
+                    } else {
+                        this.updateModalMessage('Max retries reached. Please refresh the page.');
+                        this.showNotification('Failed to connect to server', 'error');
+                    }
+                }, 2000);
+            }
+
+            showConnectionModal() {
+                this.elements.connectionModal.style.display = 'flex';
+            }
+
+            hideConnectionModal() {
+                this.elements.connectionModal.style.display = 'none';
+            }
+
+            updateStep(stepNumber, message) {
+                // Reset all steps
+                for (let i = 1; i <= 4; i++) {
+                    const step = document.getElementById(`step${i}`);
+                    step.classList.remove('active', 'completed');
+                }
+                
+                // Mark previous steps as completed
+                for (let i = 1; i < stepNumber; i++) {
+                    const step = document.getElementById(`step${i}`);
+                    step.classList.add('completed');
+                }
+                
+                // Mark current step as active
+                const currentStep = document.getElementById(`step${stepNumber}`);
+                currentStep.classList.add('active');
+                
+                this.updateModalMessage(message);
+            }
+
+            updateProgress(percentage) {
+                this.elements.loadingProgress.style.width = `${percentage}%`;
+            }
+
+            updateModalMessage(message) {
+                this.elements.modalMessage.textContent = message;
+            }
+
+            showNotification(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.className = 'notification';
+                notification.innerHTML = `
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                    ${message}
+                `;
+                
+                document.body.appendChild(notification);
+                
+                // Remove after 3 seconds
+                setTimeout(() => {
+                    notification.style.animation = 'slideOutRight 0.3s ease-out';
+                    setTimeout(() => notification.remove(), 300);
+                }, 3000);
+            }
+
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML.replace(/\n/g, '<br>');
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.sigmaGPT = new SigmaGPT();
+        });
+    </script>
+</body>
+</html>
